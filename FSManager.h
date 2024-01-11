@@ -5,14 +5,15 @@
 #ifndef PRJ_FSMANAGER_H
 #define PRJ_FSMANAGER_H
 #include "Flow.h"
-
+#include <vector>
 class FSManager {
 private:
     std::vector<Flow*> flows;
 public:
     FSManager();
     void showFlows() const;
-//    static void deleteFlow();
+    void deleteFlow();
+    void executeFlow();
 };
 
 

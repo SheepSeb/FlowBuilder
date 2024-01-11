@@ -25,10 +25,10 @@ class FlowStep {
 public:
     StepType stepType;
     explicit FlowStep(StepType type) : stepType(type) {}
-    virtual void execute() const = 0;
+    virtual void execute() = 0;
     virtual std::string toString() = 0;
     // Map stepType to string
-    std::string stepTypeToString() const {
+    [[nodiscard]] std::string stepTypeToString() const {
         switch (stepType) {
             case TITLE:
                 return "TITLE";
@@ -52,7 +52,7 @@ public:
                 return "END";
         }
     }
-    int stringTostepType(const std::string& stringStepType){
+    static int stringTostepType(const std::string& stringStepType){
         if(stringStepType == "TITLE"){
             return 1;
         }else if(stringStepType == "TEXT"){
@@ -77,6 +77,31 @@ public:
             return 0;
         }
     }
+
+    static StepType stringToStep(const std::string& stringStepType){
+        if(stringStepType == "TITLE"){
+            return TITLE;
+        }else if(stringStepType == "TEXT"){
+            return TEXT;
+        }else if(stringStepType == "TEXT_INPUT"){
+            return  TEXT_INPUT;
+        }else if(stringStepType == "NUMBER_INPUT"){
+            return NUMBER_INPUT;
+        }else if(stringStepType == "CALCULUS"){
+            return CALCULUS;
+        }else if(stringStepType == "DISPLAY"){
+            return DISPLAY;
+        }else if(stringStepType == "TEXT_FILE_INPUT"){
+            return TEXT_FILE_INPUT;
+        }else if(stringStepType == "CSV_FILE_INPUT"){
+            return CSV_FILE_INPUT;
+        }else if(stringStepType == "OUTPUT"){
+            return OUTPUT;
+        }else if(stringStepType == "END"){
+            return END;
+        }
+        return END;
+    }
 };
 
 // Derived classes for each step - Title
@@ -86,8 +111,8 @@ private:
     std::string subtitle;
 public:
     Title();
-    Title(std::string title, std::string subtitle);
-    void execute() const override;
+    explicit Title(std::vector<std::string> args);
+    void execute() override;
     std::string toString() override;
 };
 
@@ -98,7 +123,8 @@ private:
 public:
     Text();
     Text(std::string title, std::string copy);
-    void execute() const override;
+    explicit Text(std::vector<std::string> args);
+    void execute() override;
     std::string toString() override;
 };
 
@@ -108,8 +134,9 @@ private:
     std::string text_input;
 public:
     TextInput();
-    TextInput(std::string description);
-    void execute() const override;
+    explicit TextInput(std::string description);
+    explicit TextInput(std::vector<std::string> args);
+    void execute() override;
     std::string toString() override;
 };
 
@@ -119,8 +146,9 @@ private:
     float number_input{};
 public:
     NumberInput();
-    NumberInput(std::string description);
-    void execute() const override;
+    explicit NumberInput(std::string description);
+    explicit NumberInput(std::vector<std::string> args);
+    void execute() override;
     std::string toString() override;
 };
 
@@ -132,7 +160,8 @@ private:
 public:
     Calculus();
     Calculus(int number_of_steps, std::vector<int> steps, std::string calculus);
-    void execute() const override;
+    explicit Calculus(std::vector<std::string> args);
+    void execute() override;
     std::string toString() override;
 };
 
@@ -142,7 +171,8 @@ private:
 public:
     Display();
     explicit Display(int step_number);
-    void execute() const override;
+    explicit Display(std::vector<std::string> args);
+    void execute() override;
     std::string toString() override;
 };
 
@@ -152,8 +182,9 @@ private:
     std::string text_file_input;
 public:
     TextFileInput();
-    TextFileInput(std::string description);
-    void execute() const override;
+    explicit TextFileInput(std::string description);
+    explicit TextFileInput(std::vector<std::string> args);
+    void execute() override;
     std::string toString() override;
 };
 
@@ -163,8 +194,9 @@ private:
     std::string csv_file_input;
 public:
     CSVFileInput();
-    CSVFileInput(std::string description);
-    void execute() const override;
+    explicit CSVFileInput(std::string description);
+    explicit CSVFileInput(std::vector<std::string> args);
+    void execute() override;
     std::string toString() override;
 };
 
@@ -176,14 +208,15 @@ private:
     std::string description;
 public:
     Output();
-    void execute() const override;
+    explicit Output(std::vector<std::string> args);
+    void execute() override;
     std::string toString() override;
 };
 
 class End : public FlowStep {
 public:
     End();
-    void execute() const override;
+    void execute() override;
     std::string toString() override;
 };
 
