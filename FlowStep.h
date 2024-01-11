@@ -27,6 +27,9 @@ public:
     explicit FlowStep(StepType type) : stepType(type) {}
     virtual void execute() = 0;
     virtual std::string toString() = 0;
+    StepType getStepType() const {
+        return stepType;
+    }
     // Map stepType to string
     [[nodiscard]] std::string stepTypeToString() const {
         switch (stepType) {

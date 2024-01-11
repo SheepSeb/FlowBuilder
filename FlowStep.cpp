@@ -10,9 +10,9 @@ void Title::execute() {
 
 Title::Title() : FlowStep(TITLE) {
     std::cout << "Enter the title: ";
-    std::cin >> this->title;
+    std::getline(std::cin >> std::ws, this->title);
     std::cout << "Enter the subtitle: ";
-    std::cin >> this->subtitle;
+    std::getline(std::cin >> std::ws, this->subtitle);
 }
 
 std::string Title::toString() {
@@ -67,10 +67,9 @@ Output::Output(std::vector<std::string> args) : FlowStep(OUTPUT) {
 
 Text::Text() : FlowStep(TEXT) {
     std::cout << "Enter the title: ";
-    std::cin >> this->title;
+    std::getline(std::cin >> std::ws, this->title);
     std::cout << "Enter the copy: ";
-    std::cin >> this->copy;
-
+    std::getline(std::cin >> std::ws, this->copy);
 }
 
 std::string Text::toString() {
@@ -102,19 +101,18 @@ std::string TextInput::toString() {
 
 void TextInput::execute() {
     std::cout << "Enter the text input: ";
-    std::cin >> this->text_input;
+    std::getline(std::cin >> std::ws, this->text_input);
 }
 
 TextInput::TextInput(std::string description) : FlowStep(TEXT_INPUT) {
     this->description = description;
     std::cout << "Enter the text input: ";
-    std::cin >> this->text_input;
-    this->text_input = text_input;
+    std::getline(std::cin >> std::ws, this->text_input);
 }
 
 NumberInput::NumberInput() : FlowStep(NUMBER_INPUT) {
     std::cout << "Enter the description: ";
-    std::cin >> this->description;
+    std::getline(std::cin >> std::ws, this->description);
 //    std::cout << "Enter the number input: ";
 //    // generate exception if input is not a number (e.g. "abc") and try again
 //    try {
@@ -171,6 +169,7 @@ Calculus::Calculus(int number_of_steps, std::vector<int> steps, std::string calc
 }
 
 Display::Display() : FlowStep(DISPLAY) {
+    // Show all the steps that are TEXT INPUT or CSV INPUT
     std::cout << "Enter the step number: ";
     std::cin >> this->step_number;
 }

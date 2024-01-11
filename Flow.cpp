@@ -10,11 +10,9 @@
 void Flow::addStep(FlowStep *step) {
     // Show workflow till now
     std::cout<< "Current workflow:" << std::endl;
-    for (auto &step : steps) {
-        std::cout << step->stepType << std::endl;
-    }
+    Flow::showSteps();
     std::cout<< "Current number: "<<steps.size()<<std::endl;
-    std::cout << "Adding step " << step->stepType<< std::endl;
+    std::cout << "Added step " << step->stepTypeToString() << std::endl;
     steps.push_back(step);
 
 }
@@ -47,7 +45,9 @@ void Flow::save() const {
     for (auto &step : steps) {
         fprintf(fd, "%s\n", step->toString().c_str());
     }
+    fflush(fd);
     fclose(fd);
+
 }
 
 Flow::Flow(std::string filename) {
@@ -117,11 +117,25 @@ void Flow::execute() const {
     std::cout << "Executing flow " << name << std::endl;
     for (auto &step : steps) {
         std::cout << step->toString() << std::endl;
+        // If the step is end don't ask the user
+        if (step->getStepType() == END) {
+            step->execute();
+            continue;
+        }
         std::cout << "Do you want to execute this step? (y/n)" << std::endl;
         char answer;
         std::cin >> answer;
         if (answer == 'y') {
             step->execute();
         }
+    }
+}
+
+void Flow::showSteps() {
+    std::cout << "Showing steps for flow " << name << std::endl;
+    int idx = 0;
+    for (auto &step : steps) {
+        std::cout << idx << " " << step->toString() << std::endl;
+        idx++;
     }
 }
