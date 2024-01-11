@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Flow.h"
 #include "FSManager.h"
+#include "FileObserver.h"
 
 void showAvailableSteps() {
     std::cout << "Available Steps:" << std::endl;
@@ -20,7 +21,7 @@ void createWorkflow() {
     std::cout << "Creating new workflow." << std::endl;
     Flow *flow = new Flow();
     std::cout << "Current workflow: " << std::endl;
-    flow->showSteps();
+//    flow->showSteps();
 
     while (true) {
         std::cout << "Available Steps:" << std::endl;
@@ -96,6 +97,10 @@ void createWorkflow() {
     }
 }
 
+void observeFilesThread(FileObserver *fileObserver) {
+    fileObserver->observeFiles();
+}
+
 void showWorkflows(FSManager *fsManager) {
     std::cout << "Showing workflows." << std::endl;
     fsManager->showFlows();
@@ -103,6 +108,14 @@ void showWorkflows(FSManager *fsManager) {
 
 int main() {
     auto *fsManager = new FSManager();
+    auto *fileSystemWatcher = new FileSystemWatcher();
+    auto *fileObserver = new FileObserver(".", *fsManager, [](const std::string& filePath) {
+//        std::cout << "File " << filePath << " was modified." << std::endl;
+    });
+
+    fileSystemWatcher->attach(fileObserver);
+
+    std::thread threadFileObserver(observeFilesThread, fileObserver);
 
     while (true) {
         std::cout << "\nMain Menu:" << std::endl;
@@ -145,6 +158,7 @@ int main() {
                 break;
             case 7:
                 std::cout << "Exiting the program." << std::endl;
+                threadFileObserver.join();
                 return 0;
             default:
                 std::cout << "Invalid choice. Please try again." << std::endl;
@@ -152,5 +166,4 @@ int main() {
                 std::cin.clear();
         }
     }
-    return 0;
 }

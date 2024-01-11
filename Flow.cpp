@@ -20,7 +20,7 @@ void Flow::addStep(FlowStep *step) {
 Flow::Flow() {
     timestamp = std::time(nullptr);
     std::string basicString;
-    std::cout << "Enter the basicString of the flow: ";
+    std::cout << "Enter the name of the flow: ";
     std::cin >> basicString;
     filename = basicString + ".flow";
     try {
@@ -43,7 +43,7 @@ std::string Flow::getName() const {
 void Flow::save() const {
     std::cout << "Saving flow to file " << filename << std::endl;
     for (auto &step : steps) {
-        fprintf(fd, "%s\n", step->toString().c_str());
+        fprintf(fd, "%s\n", step->toWrite().c_str());
     }
     fflush(fd);
     fclose(fd);
@@ -56,7 +56,7 @@ Flow::Flow(std::string filename) {
     // Create the steps
     // Add the steps to the steps vector
     // Close the file
-    std::cout << "Loading flow from file " << filename << std::endl;
+    // std::cout << "Loading flow from file " << filename << std::endl;
     std::string true_name = filename.substr(0, filename.find(".flow"));
     this->filename = true_name;
     this->name = filename;
@@ -69,19 +69,19 @@ Flow::Flow(std::string filename) {
             if (idx == 0) {
                 // First line is the timestamp from 11 to end of line
                 std::string timestamp_string = line.substr(11);
-                std::cout << "Timestamp: " << line.substr(11) << std::endl;
+                // std::cout << "Timestamp: " << line.substr(11) << std::endl;
                 // Convert the timestamp_string to time_t
                 std::tm time_struct = {};
                 std::istringstream dateStream(timestamp_string);
                 dateStream >> std::get_time(&time_struct, "%a %b %d %H:%M:%S %Y");
                 std::time_t time_value = mktime(&time_struct);
-                std::cout << "Timestamp: " << time_value << std::endl;
+                // std::cout << "Timestamp: " << time_value << std::endl;
                 this->timestamp = time_value;
             }
             else if (idx > 1) {
                 // Create the step
                 // Add the step to the steps vector
-                std::cout << "Step: " << line << std::endl;
+                // std::cout << "Step: " << line << std::endl;
                 // Split the line by space
                 std::istringstream iss(line);
                 std::vector<std::string> results(std::istream_iterator<std::string>{iss},
@@ -98,9 +98,9 @@ Flow::Flow(std::string filename) {
         file.close();
 
         // DEBUG SHOW THE STEPS
-        for (auto &step : steps) {
-            std::cout << step->toString() << std::endl;
-        }
+//        for (auto &step : steps) {
+//            std::cout << step->toString() << std::endl;
+//        }
     }
     catch (std::exception& e) {
         std::cout << "Error opening file: " << e.what() << std::endl;
@@ -123,6 +123,7 @@ void Flow::execute() const {
             continue;
         }else{
             std::cout << "Do you want to execute this step? (y/n)" << std::endl;
+            std::cout << "Do you want to quit the flow? (q)" << std::endl;
             char answer;
             std::cin >> answer;
             if (answer == 'y') {
@@ -140,7 +141,19 @@ void Flow::execute() const {
                     Output* output = (Output*) step;
                     output->set_output_step(steps[output->get_step_number()]);
                 }
+                if(step->getStepType() == DISPLAY){
+                    Display* display = (Display*) step;
+                    display->set_display_step(steps[display->get_step_number()]);
+                }
                 step->execute();
+            } else if (answer == 'n') {
+                continue;
+            } else if (answer == 'q') {
+                std::cout << "Quitting flow " << name << std::endl;
+                return;
+            } else {
+                std::cout << "Invalid answer. Skipping step." << std::endl;
+                continue;
             }
         }
     }

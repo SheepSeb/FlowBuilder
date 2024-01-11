@@ -14,6 +14,7 @@ public:
     void showFlows() const;
     void deleteFlow();
     void executeFlow();
+    void loadFlows();
 };
 
 

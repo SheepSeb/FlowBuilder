@@ -73,6 +73,21 @@ void FSManager::executeFlow() {
         return;
     }
 
-    std::cout << "Executing flow " << flows[idx]->getName() << std::endl;
+//    std::cout << "Executing flow " << flows[idx]->getName() << std::endl;
     flows[idx]->execute();
+}
+
+void FSManager::loadFlows() {
+    namespace fs = std::filesystem;
+    std::string extension = ".flow";
+    flows.clear();
+    try{
+        for (const auto & entry : fs::directory_iterator( fs::current_path() ) ) {
+            if (entry.path().extension() == extension) {
+                flows.push_back(new Flow(entry.path().filename()));
+            }
+        }
+    } catch (std::exception& e) {
+        std::cout << "Error opening file: " << e.what() << std::endl;
+    }
 }

@@ -5,6 +5,8 @@
 #include "FlowStep.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
+
 void Title::execute() {
     std::cout << "Title" << std::endl;
 }
@@ -18,7 +20,7 @@ Title::Title() : FlowStep(TITLE) {
 
 std::string Title::toString() {
     std::string stepType_string = FlowStep::stepTypeToString();
-    return stepType_string + " " + title + " " + subtitle;
+    return stepType_string + " Title:" + title + " Subtitle:" + subtitle;
 }
 
 Title::Title(std::vector<std::string> args) : FlowStep(TITLE) {
@@ -26,17 +28,37 @@ Title::Title(std::vector<std::string> args) : FlowStep(TITLE) {
     this->subtitle = args[1];
 }
 
+std::string Title::toWrite() {
+    std::string stepType_string = FlowStep::stepTypeToString();
+    return stepType_string + " " + title + " " + subtitle;
+}
+
 Text::Text(std::vector<std::string> args) : FlowStep(TEXT) {
     this->title = args[0];
     this->copy = args[1];
+}
+
+std::string Text::toWrite() {
+    std::string stepType_string = FlowStep::stepTypeToString();
+    return stepType_string + " " + title + " " + copy;
 }
 
 TextInput::TextInput(std::vector<std::string> args) : FlowStep(TEXT_INPUT) {
     this->description = args[0];
 }
 
+std::string TextInput::toWrite() {
+    std::string stepType_string = FlowStep::stepTypeToString();
+    return stepType_string + " " + description;
+}
+
 NumberInput::NumberInput(std::vector<std::string> args) : FlowStep(NUMBER_INPUT) {
     this->description = args[0];
+}
+
+std::string NumberInput::toWrite() {
+    std::string stepType_string = FlowStep::stepTypeToString();
+    return stepType_string + " " + description;
 }
 
 Calculus::Calculus(std::vector<std::string> args) : FlowStep(CALCULUS) {
@@ -48,16 +70,41 @@ Calculus::Calculus(std::vector<std::string> args) : FlowStep(CALCULUS) {
     this->calculus = args[number_of_steps+1];
 }
 
+std::string Calculus::toWrite() {
+    std::string stepType_string = FlowStep::stepTypeToString();
+    std::string final = stepType_string + " " + std::to_string(number_of_steps);
+    for (int i = 0; i < number_of_steps; ++i) {
+        final += " " + std::to_string(steps[i]);
+    }
+    final += " " + calculus;
+    return final;
+}
+
 Display::Display(std::vector<std::string> args) : FlowStep(DISPLAY) {
     this->step_number = std::stoi(args[0]);
+}
+
+std::string Display::toWrite() {
+    std::string stepType_string = FlowStep::stepTypeToString();
+    return stepType_string + " " + std::to_string(step_number);
 }
 
 TextFileInput::TextFileInput(std::vector<std::string> args) : FlowStep(TEXT_FILE_INPUT) {
     this->description = args[0];
 }
 
+std::string TextFileInput::toWrite() {
+    std::string stepType_string = FlowStep::stepTypeToString();
+    return stepType_string + " " + description;
+}
+
 CSVFileInput::CSVFileInput(std::vector<std::string> args) : FlowStep(CSV_FILE_INPUT) {
     this->description = args[0];
+}
+
+std::string CSVFileInput::toWrite() {
+    std::string stepType_string = FlowStep::stepTypeToString();
+    return stepType_string + " " + description;
 }
 
 Output::Output(std::vector<std::string> args) : FlowStep(OUTPUT) {
@@ -65,6 +112,16 @@ Output::Output(std::vector<std::string> args) : FlowStep(OUTPUT) {
     this->file_name = args[1];
     this->title = args[2];
     this->description = args[3];
+}
+
+std::string Output::toWrite() {
+    std::string stepType_string = FlowStep::stepTypeToString();
+    return stepType_string + " " + std::to_string(step_number) + " " + file_name + " " + title + " " + description;
+}
+
+std::string End::toWrite() {
+    std::string stepType_string = FlowStep::stepTypeToString();
+    return stepType_string;
 }
 
 Text::Text() : FlowStep(TEXT) {
@@ -76,7 +133,7 @@ Text::Text() : FlowStep(TEXT) {
 
 std::string Text::toString() {
     std::string stepType_string = FlowStep::stepTypeToString();
-    return stepType_string + " " + title + " " + copy;
+    return stepType_string + " Title:" + title + " Copy:" + copy;
 }
 
 void Text::execute() {
@@ -96,7 +153,7 @@ TextInput::TextInput(): FlowStep(TEXT_INPUT) {
 
 std::string TextInput::toString() {
     std::string stepType_string = FlowStep::stepTypeToString();
-    return stepType_string + " " + description;
+    return stepType_string + " Description:" + description;
 }
 
 void TextInput::execute() {
@@ -113,15 +170,6 @@ TextInput::TextInput(std::string description) : FlowStep(TEXT_INPUT) {
 NumberInput::NumberInput() : FlowStep(NUMBER_INPUT) {
     std::cout << "Enter the description: ";
     std::getline(std::cin >> std::ws, this->description);
-//    std::cout << "Enter the number input: ";
-//    // generate exception if input is not a number (e.g. "abc") and try again
-//    try {
-//        std::cin >> this->number_input;
-//    } catch (std::exception& e) {
-//        std::cout << "Error: " << e.what() << std::endl;
-//        std::cout << "Please enter a number." << std::endl;
-//        std::cin >> this->number_input;
-//    }
 }
 
 void NumberInput::execute() {
@@ -132,7 +180,7 @@ void NumberInput::execute() {
 
 std::string NumberInput::toString() {
     std::string stepType_string = FlowStep::stepTypeToString();
-    return stepType_string + " " + description + " " + std::to_string(number_input);
+    return stepType_string + " Description:" + description;
 }
 
 NumberInput::NumberInput(std::string description) : FlowStep(NUMBER_INPUT) {
@@ -169,47 +217,47 @@ void Calculus::execute() {
     // Check what type of calculus it is
     if (calculus == "+") {
         // Sum all the steps
-        float result = 0;
+        this->result = 0;
         for (int i = 0; i < number_of_steps; ++i) {
-            result += steps[i];
+            this->result += steps[i];
         }
         std::cout << "The result is: " << result << std::endl;
     } else if (calculus == "-") {
         // Subtract all the steps
-        float result = steps[0];
+        this->result = steps[0];
         for (int i = 1; i < number_of_steps; ++i) {
-            result -= steps[i];
+            this->result -= steps[i];
         }
         std::cout << "The result is: " << result << std::endl;
     } else if (calculus == "*") {
         // Product all the steps
-        float result = 1;
+        this->result = 1;
         for (int i = 0; i < number_of_steps; ++i) {
-            result *= steps[i];
+            this->result *= steps[i];
         }
         std::cout << "The result is: " << result << std::endl;
     } else if (calculus == "/") {
         // Divide all the steps
-        float result = steps[0];
+        this->result = steps[0];
         for (int i = 1; i < number_of_steps; ++i) {
-            result /= steps[i];
+            this->result /= steps[i];
         }
         std::cout << "The result is: " << result << std::endl;
     }
     else if (calculus == "min") {
-        float result = steps[0];
+        this->result = steps[0];
         for (int i = 1; i < number_of_steps; ++i) {
             if (steps[i] < result) {
-                result = steps[i];
+                this->result = steps[i];
             }
         }
         std::cout << "The result is: " << result << std::endl;
     }
     else if (calculus == "max") {
-        float result = steps[0];
+        this->result= steps[0];
         for (int i = 1; i < number_of_steps; ++i) {
             if (steps[i] > result) {
-                result = steps[i];
+                this->result = steps[i];
             }
         }
         std::cout << "The result is: " << result << std::endl;
@@ -222,6 +270,14 @@ void Calculus::execute() {
 
 float Calculus::get_result() {
     return result;
+}
+
+std::string TextFileInput::get_text_file_input() {
+    return text_file_input;
+}
+
+std::string CSVFileInput::get_csv_file_input() {
+    return csv_file_input;
 }
 
 std::string Calculus::toString() {
@@ -248,11 +304,47 @@ Display::Display() : FlowStep(DISPLAY) {
 
 void Display::execute() {
     std::cout << "Display" << std::endl;
+    std::string file_name;
+    // Check if the step is TEXT INPUT or CSV INPUT
+    if (display_step->getStepType() == TEXT_FILE_INPUT) {
+        TextFileInput *textInput = (TextFileInput *) display_step;
+        file_name = textInput->get_text_file_input();
+        // Read the file and print the content
+        std::ifstream file;
+        file.open(file_name);
+        std::string line;
+        while (std::getline(file, line)) {
+            std::cout << line << std::endl;
+        }
+        file.close();
+    } else if (display_step->getStepType() == CSV_FILE_INPUT) {
+        CSVFileInput *csvFileInput = (CSVFileInput *) display_step;
+        file_name = csvFileInput->get_csv_file_input();
+        // Read the file and print the content
+        std::ifstream file;
+        file.open(file_name);
+        std::vector<std::string> row;
+        std::string line, word, temp;
+        while (std::getline(file, line)) {
+            row.clear();
+            std::stringstream s(line);
+            while (std::getline(s, word, ',')) {
+                row.push_back(word);
+            }
+            for (int i = 0; i < row.size(); ++i) {
+                std::cout << row[i] << " ";
+            }
+            std::cout << std::endl;
+        }
+        file.close();
+    } else {
+        std::cout << "Invalid step" << std::endl;
+    }
 }
 
 std::string Display::toString() {
     std::string stepType_string = FlowStep::stepTypeToString();
-    return stepType_string + " " + std::to_string(step_number);
+    return stepType_string + " step:" + std::to_string(step_number);
 }
 
 Display::Display(int step_number) : FlowStep(DISPLAY) {
@@ -268,17 +360,31 @@ TextFileInput::TextFileInput() : FlowStep(TEXT_FILE_INPUT) {
 
 void TextFileInput::execute() {
     std::cout << "Text File Input" << std::endl;
+    std::cout << "Enter the filename: ";
+    std::cin >> this->text_file_input;
+    std::ifstream file;
+    file.open(this->text_file_input);
+    std::string line;
+    while (std::getline(file, line)) {
+        this->data += line;
+    }
+    file.close();
+}
+
+std::string TextFileInput::get_data() {
+    return data;
 }
 
 std::string TextFileInput::toString() {
     std::string stepType_string = FlowStep::stepTypeToString();
-    return stepType_string + " " + description + " " + text_file_input;
+    return stepType_string + " Description" + description;
 }
 
 TextFileInput::TextFileInput(std::string description) : FlowStep(TEXT_FILE_INPUT) {
     this->description = description;
     std::cout << "Enter the filename: ";
     std::cin >> this->text_file_input;
+    this->text_file_input += ".txt";
 }
 
 CSVFileInput::CSVFileInput() : FlowStep(CSV_FILE_INPUT) {
@@ -286,15 +392,38 @@ CSVFileInput::CSVFileInput() : FlowStep(CSV_FILE_INPUT) {
     std::cin >> this->description;
     std::cout << "Enter the filename: ";
     std::cin >> this->csv_file_input;
+    this->csv_file_input += ".csv";
 }
 
 void CSVFileInput::execute() {
     std::cout << "CSV File Input" << std::endl;
+    std::cout << "Enter the filename: ";
+    std::cin >> this->csv_file_input;
+    std::ifstream file;
+    file.open(this->csv_file_input);
+    std::vector<std::string> row;
+    std::string line, word, temp;
+    while (std::getline(file, line)) {
+        row.clear();
+        std::stringstream s(line);
+        while (std::getline(s, word, ',')) {
+            row.push_back(word);
+        }
+        for (int i = 0; i < row.size(); ++i) {
+            this->data += row[i] + " ";
+        }
+        this->data += "\n";
+    }
+    file.close();
 }
 
 std::string CSVFileInput::toString() {
     std::string stepType_string = FlowStep::stepTypeToString();
-    return stepType_string + " " + description + " " + csv_file_input;
+    return stepType_string + " Description:" + description;
+}
+
+std::string CSVFileInput::get_data() {
+    return data;
 }
 
 CSVFileInput::CSVFileInput(std::string description) : FlowStep(CSV_FILE_INPUT) {
@@ -317,12 +446,23 @@ Output::Output() : FlowStep(OUTPUT) {
 void Output::execute() {
     // Create a file with the name file_name
     std::ofstream file;
-    // Mode append
+    // Mode append if the file already exists
+    // And if you want to add multiple lines to it
     file.open(file_name, std::ios_base::app);
     file << this->title << std::endl;
     file << this->description << std::endl;
     file << output_step->toString() << std::endl;
+    // Flush the buffer
+    file.flush();
     file.close();
+}
+
+void Display::set_display_step(FlowStep *step) {
+    this->display_step = step;
+}
+
+int Display::get_step_number() {
+    return step_number;
 }
 
 int Output::get_step_number() {
@@ -335,7 +475,7 @@ void Output::set_output_step(FlowStep *step) {
 
 std::string Output::toString() {
     std::string stepType_string = FlowStep::stepTypeToString();
-    return stepType_string + " " + std::to_string(step_number) + " " + file_name + " " + title + " " + description;
+    return stepType_string + " Step:" + std::to_string(step_number) + " File Name:" + file_name + " Title:" + title + " Description:" + description;
 }
 
 End::End() : FlowStep(END) {}

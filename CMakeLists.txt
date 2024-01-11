@@ -11,4 +11,6 @@ add_executable(PRJ main.cpp
         FSManager.cpp
         FSManager.h
         FlowFactory.cpp
-        FlowFactory.h)
+        FlowFactory.h
+        FileObserver.cpp
+        FileObserver.h)

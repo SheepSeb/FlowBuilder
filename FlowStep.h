@@ -27,6 +27,8 @@ public:
     explicit FlowStep(StepType type) : stepType(type) {}
     virtual void execute() = 0;
     virtual std::string toString() = 0;
+    virtual ~FlowStep() = default;
+    virtual std::string toWrite() = 0;
     StepType getStepType() const {
         return stepType;
     }
@@ -117,6 +119,7 @@ public:
     explicit Title(std::vector<std::string> args);
     void execute() override;
     std::string toString() override;
+    std::string toWrite() override;
 };
 
 class Text : public FlowStep {
@@ -129,6 +132,7 @@ public:
     explicit Text(std::vector<std::string> args);
     void execute() override;
     std::string toString() override;
+    std::string toWrite() override;
 };
 
 class TextInput : public FlowStep {
@@ -141,6 +145,7 @@ public:
     explicit TextInput(std::vector<std::string> args);
     void execute() override;
     std::string toString() override;
+    std::string toWrite() override;
 };
 
 class NumberInput : public FlowStep {
@@ -154,6 +159,7 @@ public:
     void execute() override;
     float get_number_input();
     std::string toString() override;
+    std::string toWrite() override;
 };
 
 class Calculus : public FlowStep {
@@ -171,41 +177,54 @@ public:
     void set_internal_steps(std::vector<float> steps);
     float get_result();
     std::string toString() override;
+    std::string toWrite() override;
 };
 
 class Display : public FlowStep {
 private:
-    int step_number{};
+    int step_number;
+    FlowStep *display_step;
 public:
     Display();
     explicit Display(int step_number);
     explicit Display(std::vector<std::string> args);
     void execute() override;
+    void set_display_step(FlowStep* step);
+    int get_step_number();
     std::string toString() override;
+    std::string toWrite() override;
 };
 
 class TextFileInput : public FlowStep {
 private:
     std::string description;
     std::string text_file_input;
+    std::string data;
 public:
     TextFileInput();
     explicit TextFileInput(std::string description);
     explicit TextFileInput(std::vector<std::string> args);
+    std::string get_text_file_input();
+    std::string get_data();
     void execute() override;
     std::string toString() override;
+    std::string toWrite() override;
 };
 
 class CSVFileInput : public FlowStep {
 private:
     std::string description;
     std::string csv_file_input;
+    std::string data;
 public:
     CSVFileInput();
     explicit CSVFileInput(std::string description);
     explicit CSVFileInput(std::vector<std::string> args);
     void execute() override;
+    std::string get_csv_file_input();
+    std::string get_data();
     std::string toString() override;
+    std::string toWrite() override;
 };
 
 class Output : public FlowStep {
@@ -222,6 +241,7 @@ public:
     int get_step_number();
     void set_output_step(FlowStep* step);
     std::string toString() override;
+    std::string toWrite() override;
 };
 
 class End : public FlowStep {
@@ -229,6 +249,7 @@ public:
     End();
     void execute() override;
     std::string toString() override;
+    std::string toWrite() override;
 };
 
 #endif //PRJ_FLOWSTEP_H
