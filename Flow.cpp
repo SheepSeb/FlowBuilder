@@ -121,12 +121,23 @@ void Flow::execute() const {
         if (step->getStepType() == END) {
             step->execute();
             continue;
-        }
-        std::cout << "Do you want to execute this step? (y/n)" << std::endl;
-        char answer;
-        std::cin >> answer;
-        if (answer == 'y') {
-            step->execute();
+        }else{
+            std::cout << "Do you want to execute this step? (y/n)" << std::endl;
+            char answer;
+            std::cin >> answer;
+            if (answer == 'y') {
+                // If the step is calculus read the steps from the flow
+                if (step->getStepType() == CALCULUS) {
+                    Calculus* calculus = (Calculus*) step;
+                    std::vector<float> temp;
+                    for (int i = 0; i < calculus->get_internal_steps().size(); ++i) {
+                        NumberInput* numberInput = (NumberInput*) steps[calculus->get_internal_steps()[i]];
+                        temp.push_back(numberInput->get_number_input());
+                    }
+                    calculus->set_internal_steps(temp);
+                }
+                step->execute();
+            }
         }
     }
 }
@@ -138,4 +149,8 @@ void Flow::showSteps() {
         std::cout << idx << " " << step->toString() << std::endl;
         idx++;
     }
+}
+
+std::vector<FlowStep*> Flow::getSteps() {
+    return steps;
 }

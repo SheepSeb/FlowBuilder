@@ -146,25 +146,30 @@ public:
 class NumberInput : public FlowStep {
 private:
     std::string description;
-    float number_input{};
+    float number_input;
 public:
     NumberInput();
     explicit NumberInput(std::string description);
     explicit NumberInput(std::vector<std::string> args);
     void execute() override;
+    float get_number_input();
     std::string toString() override;
 };
 
 class Calculus : public FlowStep {
 private:
     int number_of_steps;
-    std::vector<int> steps;
+    std::vector<float> steps;
     std::string calculus;
+    float result;
 public:
     Calculus();
-    Calculus(int number_of_steps, std::vector<int> steps, std::string calculus);
+    Calculus(int number_of_steps, std::vector<float> steps, std::string calculus);
     explicit Calculus(std::vector<std::string> args);
     void execute() override;
+    std::vector<float> get_internal_steps();
+    void set_internal_steps(std::vector<float> steps);
+    float get_result();
     std::string toString() override;
 };
 

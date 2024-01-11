@@ -22,6 +22,8 @@ public:
     void save() const;
     std::string getName() const;
     void showSteps();
+
+    std::vector<FlowStep*> getSteps();
 };
 
 

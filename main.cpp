@@ -46,7 +46,7 @@ void createWorkflow() {
             std::cin.ignore(10000, '\n');
             continue;
         }
-
+        int idx = 0;
         switch (choice) {
             case 1:
                 flow->addStep(new Title());
@@ -61,6 +61,13 @@ void createWorkflow() {
                 flow->addStep(new NumberInput());
                 break;
             case 5:
+                // Show all the steps that are Number Input
+                for (auto &step : flow->getSteps()) {
+                    if (step->getStepType() == NUMBER_INPUT) {
+                        std::cout << idx << " " << step->toString() << std::endl;
+                    }
+                    idx++;
+                }
                 flow->addStep(new Calculus());
                 break;
             case 6:

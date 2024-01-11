@@ -41,7 +41,8 @@ NumberInput::NumberInput(std::vector<std::string> args) : FlowStep(NUMBER_INPUT)
 Calculus::Calculus(std::vector<std::string> args) : FlowStep(CALCULUS) {
     this->number_of_steps = std::stoi(args[0]);
     for (int i = 0; i < number_of_steps; ++i) {
-        this->steps[i] = std::stoi(args[i+1]);
+        float num =  std::stof(args[i+1]);
+        steps.push_back(num);
     }
     this->calculus = args[number_of_steps+1];
 }
@@ -90,8 +91,6 @@ TextInput::TextInput(): FlowStep(TEXT_INPUT) {
     std::cout << "Enter the description: ";
     // get the description as a string with spaces
     std::getline(std::cin >> std::ws, this->description);
-//    std::cout << "Enter the text input: ";
-//    std::cin >> this->text_input;
 }
 
 std::string TextInput::toString() {
@@ -126,6 +125,8 @@ NumberInput::NumberInput() : FlowStep(NUMBER_INPUT) {
 
 void NumberInput::execute() {
     std::cout << "Number Input" << std::endl;
+    std::cout << "Enter the number input: ";
+    std::cin >> this->number_input;
 }
 
 std::string NumberInput::toString() {
@@ -142,14 +143,84 @@ Calculus::Calculus() : FlowStep(CALCULUS) {
     std::cin >> this->number_of_steps;
     for (int i = 0; i < number_of_steps; ++i) {
         std::cout << "Enter step id" << i << ": ";
-        std::cin >> this->steps[i];
+        float num;
+        std::cin >> num;
+        steps.push_back(num);
     }
     std::cout << "Enter the calculus: ";
     std::cin >> this->calculus;
 }
 
+std::vector<float> Calculus::get_internal_steps() {
+    return steps;
+}
+
+void Calculus::set_internal_steps(std::vector<float> steps) {
+    this->steps = steps;
+}
+
+float NumberInput::get_number_input() {
+    return number_input;
+}
+
 void Calculus::execute() {
     std::cout << "Calculus" << std::endl;
+    // Check what type of calculus it is
+    if (calculus == "+") {
+        // Sum all the steps
+        float result = 0;
+        for (int i = 0; i < number_of_steps; ++i) {
+            result += steps[i];
+        }
+        std::cout << "The result is: " << result << std::endl;
+    } else if (calculus == "-") {
+        // Subtract all the steps
+        float result = steps[0];
+        for (int i = 1; i < number_of_steps; ++i) {
+            result -= steps[i];
+        }
+        std::cout << "The result is: " << result << std::endl;
+    } else if (calculus == "*") {
+        // Product all the steps
+        float result = 1;
+        for (int i = 0; i < number_of_steps; ++i) {
+            result *= steps[i];
+        }
+        std::cout << "The result is: " << result << std::endl;
+    } else if (calculus == "/") {
+        // Divide all the steps
+        float result = steps[0];
+        for (int i = 1; i < number_of_steps; ++i) {
+            result /= steps[i];
+        }
+        std::cout << "The result is: " << result << std::endl;
+    }
+    else if (calculus == "min") {
+        float result = steps[0];
+        for (int i = 1; i < number_of_steps; ++i) {
+            if (steps[i] < result) {
+                result = steps[i];
+            }
+        }
+        std::cout << "The result is: " << result << std::endl;
+    }
+    else if (calculus == "max") {
+        float result = steps[0];
+        for (int i = 1; i < number_of_steps; ++i) {
+            if (steps[i] > result) {
+                result = steps[i];
+            }
+        }
+        std::cout << "The result is: " << result << std::endl;
+    } else {
+        std::cout << "Invalid calculus" << std::endl;
+        this->result = 0;
+    }
+    this->result = result;
+}
+
+float Calculus::get_result() {
+    return result;
 }
 
 std::string Calculus::toString() {
@@ -162,7 +233,7 @@ std::string Calculus::toString() {
     return final;
 }
 
-Calculus::Calculus(int number_of_steps, std::vector<int> steps, std::string calculus) : FlowStep(CALCULUS) {
+Calculus::Calculus(int number_of_steps, std::vector<float> steps, std::string calculus) : FlowStep(CALCULUS) {
     this->number_of_steps = number_of_steps;
     this->steps = steps;
     this->calculus = calculus;
