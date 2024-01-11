@@ -136,6 +136,10 @@ void Flow::execute() const {
                     }
                     calculus->set_internal_steps(temp);
                 }
+                if(step->getStepType() == OUTPUT){
+                    Output* output = (Output*) step;
+                    output->set_output_step(steps[output->get_step_number()]);
+                }
                 step->execute();
             }
         }

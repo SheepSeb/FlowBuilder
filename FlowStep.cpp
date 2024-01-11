@@ -4,6 +4,7 @@
 
 #include "FlowStep.h"
 #include <iostream>
+#include <fstream>
 void Title::execute() {
     std::cout << "Title" << std::endl;
 }
@@ -314,7 +315,22 @@ Output::Output() : FlowStep(OUTPUT) {
 }
 
 void Output::execute() {
-    std::cout << "Output" << std::endl;
+    // Create a file with the name file_name
+    std::ofstream file;
+    // Mode append
+    file.open(file_name, std::ios_base::app);
+    file << this->title << std::endl;
+    file << this->description << std::endl;
+    file << output_step->toString() << std::endl;
+    file.close();
+}
+
+int Output::get_step_number() {
+    return step_number;
+}
+
+void Output::set_output_step(FlowStep *step) {
+    this->output_step = step;
 }
 
 std::string Output::toString() {

@@ -211,6 +211,7 @@ public:
 class Output : public FlowStep {
 private:
     int step_number;
+    FlowStep *output_step;
     std::string file_name;
     std::string title;
     std::string description;
@@ -218,6 +219,8 @@ public:
     Output();
     explicit Output(std::vector<std::string> args);
     void execute() override;
+    int get_step_number();
+    void set_output_step(FlowStep* step);
     std::string toString() override;
 };
 
