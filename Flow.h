@@ -21,6 +21,7 @@ public:
     void skipStep() const;
     void save() const;
     std::string getName() const;
+    void showSteps();
 };
 
 

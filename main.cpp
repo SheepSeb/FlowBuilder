@@ -19,6 +19,9 @@ void showAvailableSteps() {
 void createWorkflow() {
     std::cout << "Creating new workflow." << std::endl;
     Flow *flow = new Flow();
+    std::cout << "Current workflow: " << std::endl;
+    flow->showSteps();
+
     while (true) {
         std::cout << "Available Steps:" << std::endl;
         std::cout << "1. TITLE" << std::endl;
