@@ -5,7 +5,7 @@
 #ifndef PRJ_FLOW_H
 #define PRJ_FLOW_H
 #include "FlowStep.h"
-
+#include "FlowFactory.h"
 class Flow {
 private:
     std::string name;

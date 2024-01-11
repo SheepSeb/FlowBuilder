@@ -101,7 +101,8 @@ int main() {
         std::cout << "3. Show Workflows" << std::endl;
         std::cout << "4. Show Analytics" << std::endl;
         std::cout << "5. Delete Workflows" << std::endl;
-        std::cout << "6. Exit" << std::endl;
+        std::cout << "6. Execute Workflow" << std::endl;
+        std::cout << "7. Exit" << std::endl;
 
         int choice;
         std::cout << "Enter your choice: ";
@@ -127,8 +128,12 @@ int main() {
 //                showAnalytics(workflows);
                 break;
             case 5:
+                fsManager->deleteFlow();
                 break;
             case 6:
+                fsManager->executeFlow();
+                break;
+            case 7:
                 std::cout << "Exiting the program." << std::endl;
                 return 0;
             default:

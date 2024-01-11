@@ -3,8 +3,8 @@
 //
 
 #include "FlowStep.h"
-
-void Title::execute() const {
+#include <iostream>
+void Title::execute() {
     std::cout << "Title" << std::endl;
 }
 
@@ -20,9 +20,49 @@ std::string Title::toString() {
     return stepType_string + " " + title + " " + subtitle;
 }
 
-Title::Title(std::string title, std::string subtitle) : FlowStep(TITLE) {
-    this->title = title;
-    this->subtitle = subtitle;
+Title::Title(std::vector<std::string> args) : FlowStep(TITLE) {
+    this->title = args[0];
+    this->subtitle = args[1];
+}
+
+Text::Text(std::vector<std::string> args) : FlowStep(TEXT) {
+    this->title = args[0];
+    this->copy = args[1];
+}
+
+TextInput::TextInput(std::vector<std::string> args) : FlowStep(TEXT_INPUT) {
+    this->description = args[0];
+}
+
+NumberInput::NumberInput(std::vector<std::string> args) : FlowStep(NUMBER_INPUT) {
+    this->description = args[0];
+}
+
+Calculus::Calculus(std::vector<std::string> args) : FlowStep(CALCULUS) {
+    this->number_of_steps = std::stoi(args[0]);
+    for (int i = 0; i < number_of_steps; ++i) {
+        this->steps[i] = std::stoi(args[i+1]);
+    }
+    this->calculus = args[number_of_steps+1];
+}
+
+Display::Display(std::vector<std::string> args) : FlowStep(DISPLAY) {
+    this->step_number = std::stoi(args[0]);
+}
+
+TextFileInput::TextFileInput(std::vector<std::string> args) : FlowStep(TEXT_FILE_INPUT) {
+    this->description = args[0];
+}
+
+CSVFileInput::CSVFileInput(std::vector<std::string> args) : FlowStep(CSV_FILE_INPUT) {
+    this->description = args[0];
+}
+
+Output::Output(std::vector<std::string> args) : FlowStep(OUTPUT) {
+    this->step_number = std::stoi(args[0]);
+    this->file_name = args[1];
+    this->title = args[2];
+    this->description = args[3];
 }
 
 Text::Text() : FlowStep(TEXT) {
@@ -38,7 +78,7 @@ std::string Text::toString() {
     return stepType_string + " " + title + " " + copy;
 }
 
-void Text::execute() const {
+void Text::execute() {
     std::cout << "Text" << std::endl;
 }
 
@@ -49,18 +89,20 @@ Text::Text(std::string title, std::string copy) : FlowStep(TEXT) {
 
 TextInput::TextInput(): FlowStep(TEXT_INPUT) {
     std::cout << "Enter the description: ";
-    std::cin >> this->description;
+    // get the description as a string with spaces
+    std::getline(std::cin >> std::ws, this->description);
 //    std::cout << "Enter the text input: ";
 //    std::cin >> this->text_input;
 }
 
 std::string TextInput::toString() {
     std::string stepType_string = FlowStep::stepTypeToString();
-    return stepType_string + " " + description + " " + text_input;
+    return stepType_string + " " + description;
 }
 
-void TextInput::execute() const {
-    std::cout << "Text Input" << std::endl;
+void TextInput::execute() {
+    std::cout << "Enter the text input: ";
+    std::cin >> this->text_input;
 }
 
 TextInput::TextInput(std::string description) : FlowStep(TEXT_INPUT) {
@@ -84,7 +126,7 @@ NumberInput::NumberInput() : FlowStep(NUMBER_INPUT) {
 //    }
 }
 
-void NumberInput::execute() const {
+void NumberInput::execute() {
     std::cout << "Number Input" << std::endl;
 }
 
@@ -93,7 +135,7 @@ std::string NumberInput::toString() {
     return stepType_string + " " + description + " " + std::to_string(number_input);
 }
 
-NumberInput::NumberInput(std::string description) : FlowStep(NUMBER_INPUT)) {
+NumberInput::NumberInput(std::string description) : FlowStep(NUMBER_INPUT) {
     this->description = description;
 }
 
@@ -108,7 +150,7 @@ Calculus::Calculus() : FlowStep(CALCULUS) {
     std::cin >> this->calculus;
 }
 
-void Calculus::execute() const {
+void Calculus::execute() {
     std::cout << "Calculus" << std::endl;
 }
 
@@ -133,7 +175,7 @@ Display::Display() : FlowStep(DISPLAY) {
     std::cin >> this->step_number;
 }
 
-void Display::execute() const {
+void Display::execute() {
     std::cout << "Display" << std::endl;
 }
 
@@ -153,7 +195,7 @@ TextFileInput::TextFileInput() : FlowStep(TEXT_FILE_INPUT) {
     std::cin >> this->text_file_input;
 }
 
-void TextFileInput::execute() const {
+void TextFileInput::execute() {
     std::cout << "Text File Input" << std::endl;
 }
 
@@ -175,13 +217,19 @@ CSVFileInput::CSVFileInput() : FlowStep(CSV_FILE_INPUT) {
     std::cin >> this->csv_file_input;
 }
 
-void CSVFileInput::execute() const {
+void CSVFileInput::execute() {
     std::cout << "CSV File Input" << std::endl;
 }
 
 std::string CSVFileInput::toString() {
     std::string stepType_string = FlowStep::stepTypeToString();
     return stepType_string + " " + description + " " + csv_file_input;
+}
+
+CSVFileInput::CSVFileInput(std::string description) : FlowStep(CSV_FILE_INPUT) {
+    this->description = description;
+    std::cout << "Enter the filename: ";
+    std::cin >> this->csv_file_input;
 }
 
 Output::Output() : FlowStep(OUTPUT) {
@@ -195,7 +243,7 @@ Output::Output() : FlowStep(OUTPUT) {
     std::cin >> this->description;
 }
 
-void Output::execute() const {
+void Output::execute() {
     std::cout << "Output" << std::endl;
 }
 
@@ -206,7 +254,7 @@ std::string Output::toString() {
 
 End::End() : FlowStep(END) {}
 
-void End::execute() const {
+void End::execute() {
     std::cout << "End" << std::endl;
 }
 

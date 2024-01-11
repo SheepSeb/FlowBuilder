@@ -59,6 +59,7 @@ Flow::Flow(std::string filename) {
     std::cout << "Loading flow from file " << filename << std::endl;
     std::string true_name = filename.substr(0, filename.find(".flow"));
     this->filename = true_name;
+    this->name = filename;
     try {
         std::ifstream file(filename);
         std::string line;
@@ -85,13 +86,42 @@ Flow::Flow(std::string filename) {
                 std::istringstream iss(line);
                 std::vector<std::string> results(std::istream_iterator<std::string>{iss},
                                                  std::istream_iterator<std::string>());
-                std::string stepType = results[0];
-                std::cout<< "Step type: " << stepType << std::endl;
+                StepType stepType = FlowStep::stringToStep(results[0]);
+                // Get the rest of the arguments
+                std::vector<std::string> arguments(results.begin() + 1, results.end());
+                FlowStep* step = FlowFactory::createStep(stepType, arguments);
+                steps.push_back(step);
             }
             idx++;
+        }
+
+        file.close();
+
+        // DEBUG SHOW THE STEPS
+        for (auto &step : steps) {
+            std::cout << step->toString() << std::endl;
         }
     }
     catch (std::exception& e) {
         std::cout << "Error opening file: " << e.what() << std::endl;
+    }
+}
+
+void Flow::execute() const {
+    // For each step in steps vector
+    // Ask the user if he wants to execute the step
+    // If yes, execute the step
+    // If no, skip the step
+
+    // Show the steps
+    std::cout << "Executing flow " << name << std::endl;
+    for (auto &step : steps) {
+        std::cout << step->toString() << std::endl;
+        std::cout << "Do you want to execute this step? (y/n)" << std::endl;
+        char answer;
+        std::cin >> answer;
+        if (answer == 'y') {
+            step->execute();
+        }
     }
 }
