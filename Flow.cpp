@@ -107,7 +107,7 @@ Flow::Flow(std::string filename) {
     }
 }
 
-void Flow::execute() const {
+void Flow::execute(FlowAnalytics &flowAnalytics) const {
     // For each step in steps vector
     // Ask the user if he wants to execute the step
     // If yes, execute the step
@@ -147,6 +147,8 @@ void Flow::execute() const {
                 }
                 step->execute();
             } else if (answer == 'n') {
+                std::cout << "Skipping step." << std::endl;
+                flowAnalytics.screenSkipped(this->name, step->stepTypeToString());
                 continue;
             } else if (answer == 'q') {
                 std::cout << "Quitting flow " << name << std::endl;

@@ -6,6 +6,7 @@
 #define PRJ_FLOW_H
 #include "FlowStep.h"
 #include "FlowFactory.h"
+#include "FlowAnalytics.h"
 class Flow {
 private:
     std::string name;
@@ -17,7 +18,7 @@ public:
     Flow();
     explicit Flow(std::string filename);
     void addStep(FlowStep* step);
-    void execute() const;
+    void execute(FlowAnalytics &flowAnalytics) const;
     void skipStep() const;
     void save() const;
     std::string getName() const;

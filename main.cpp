@@ -148,7 +148,7 @@ int main() {
                 showWorkflows(fsManager);
                 break;
             case 4:
-//                showAnalytics(workflows);
+                fsManager->showAnalytics();
                 break;
             case 5:
                 fsManager->deleteFlow();
@@ -158,6 +158,7 @@ int main() {
                 break;
             case 7:
                 std::cout << "Exiting the program." << std::endl;
+                fileObserver->termianteThread = true;
                 threadFileObserver.join();
                 return 0;
             default:

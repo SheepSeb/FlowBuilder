@@ -6,15 +6,18 @@
 #define PRJ_FSMANAGER_H
 #include "Flow.h"
 #include <vector>
+#include "FlowAnalytics.h"
 class FSManager {
 private:
     std::vector<Flow*> flows;
+    FlowAnalytics flowAnalytics;
 public:
     FSManager();
     void showFlows() const;
     void deleteFlow();
     void executeFlow();
     void loadFlows();
+    void showAnalytics();
 };
 
 

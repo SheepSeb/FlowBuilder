@@ -31,6 +31,7 @@ public:
     FileObserver(const std::string &directoryPath, FSManager& manager, std::function<void(const std::string&)> callback);
     void update() override;
     void observeFiles();
+    bool termianteThread = false;
 };
 
 class FileSystemWatcher{

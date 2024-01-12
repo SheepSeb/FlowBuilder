@@ -13,4 +13,6 @@ add_executable(PRJ main.cpp
         FlowFactory.cpp
         FlowFactory.h
         FileObserver.cpp
-        FileObserver.h)
+        FileObserver.h
+        FlowAnalytics.cpp
+        FlowAnalytics.h)

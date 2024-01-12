@@ -4,6 +4,7 @@
 
 #include "FileObserver.h"
 
+
 FileObserver::FileObserver(const std::string &directoryPath, FSManager& manager, std::function<void(const std::string &)> callback) : fsManager(manager) {
     this->directoryPath = directoryPath;
     this->callback = callback;
@@ -44,7 +45,7 @@ void FileSystemWatcher::notify() {
 }
 
 void FileObserver::observeFiles() {
-    while (true) {
+    while (!termianteThread) {
         update();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }

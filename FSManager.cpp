@@ -15,6 +15,9 @@ FSManager::FSManager() {
                 flows.push_back(new Flow(entry.path().filename()));
             }
         }
+        // Initialize the flow analytics
+        flowAnalytics.load();
+        flowAnalytics.showStats("default");
     } catch (std::exception& e) {
         std::cout << "Error opening file: " << e.what() << std::endl;
     }
@@ -72,9 +75,10 @@ void FSManager::executeFlow() {
         std::cout << "Invalid index" << std::endl;
         return;
     }
-
-//    std::cout << "Executing flow " << flows[idx]->getName() << std::endl;
-    flows[idx]->execute();
+    flowAnalytics.getFlowStats()[flows[idx]->getName()];
+    flowAnalytics.flowStarted(flows[idx]->getName());
+    flows[idx]->execute(this->flowAnalytics);
+    flowAnalytics.flowCompleted(flows[idx]->getName());
 }
 
 void FSManager::loadFlows() {
@@ -89,5 +93,18 @@ void FSManager::loadFlows() {
         }
     } catch (std::exception& e) {
         std::cout << "Error opening file: " << e.what() << std::endl;
+    }
+}
+
+void FSManager::showAnalytics() {
+    for (auto &flow : flows) {
+        std::cout << "Flow " << flow->getName() << std::endl;
+        // Check if the flow has stats
+        if (flowAnalytics.getFlowStats().find(flow->getName()) == flowAnalytics.getFlowStats().end()) {
+            std::cout << "No stats available" << std::endl;
+            continue;
+        }else{
+            flowAnalytics.showStats(flow->getName());
+        }
     }
 }
